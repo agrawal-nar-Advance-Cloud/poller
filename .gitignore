@@ -14,7 +14,7 @@ buildNumber.properties
 mvnw.cmd
 /mvnw
 .mvn
-
+helm/myvalues.yaml
 ### STS ###
 .apt_generated
 .classpath

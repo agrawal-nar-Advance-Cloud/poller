@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "poller.fullname" . }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "poller.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "poller.selectorLabels" . | nindent 6 }}
+  progressDeadlineSeconds: {{ .Values.progressDeadlineSeconds }}
+  minReadySeconds: {{ .Values.minReadySeconds }}
+  strategy:
+    type: {{ .Values.deployment.type }}
+    rollingUpdate:
+      maxSurge: {{ .Values.deployment.maxSurge }}
+      maxUnavailable: {{ .Values.deployment.maxUnavailable }}
+  template:
+    metadata:
+      labels:
+        {{- include "poller.selectorLabels" . | nindent 8 }}
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.secret.dockercred.name }}-{{ .Release.Name }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image.repository }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: poller9091
+              containerPort: 9091
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 9091
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9091
+            initialDelaySeconds: 20
+            periodSeconds: 20
