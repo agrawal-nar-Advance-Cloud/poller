@@ -66,7 +66,7 @@ pipeline {
             steps{
                 script {
                     withKubeConfig([credentialsId: 'kubernetesCred',serverUrl: "${ServerUrl}"]) {
-                        sh "helm upgrade poller ./helm/ -f ./helm/myvalues.yaml"
+                        sh "helm upgrade poller -n api ./helm/ -f ./helm/myvalues.yaml"
                     }
                 }
             }
